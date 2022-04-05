@@ -8,58 +8,59 @@ generator client {
 }
 
 model Tournament {
-  id      Int       @id @default(autoincrement())
-  name    String?
-  created DateTime? @default(now())
-  updated DateTime? @updatedAt
+  id      Int      @id @default(autoincrement())
+  name    String
+  created DateTime @default(now())
+  updated DateTime @updatedAt
   matches Match[]
   teams   Team[]
 }
 
 model Match {
   id           Int          @id @default(autoincrement())
-  tournamentId Int?
-  homeId       Int?
-  awayId       Int?
-  order        Int?
-  created      DateTime?    @default(now())
-  updated      DateTime?    @updatedAt
+  tournamentId Int
+  homeId       Int
+  awayId       Int
+  order        Int
+  isFinish     Boolean      @default(false)
+  created      DateTime     @default(now())
+  updated      DateTime     @updatedAt
   MatchScore   MatchScore[]
-  home         Team?        @relation(name: "home", fields: [homeId], references: [id])
-  away         Team?        @relation(name: "away", fields: [awayId], references: [id])
-  Tournament   Tournament?  @relation(fields: [tournamentId], references: [id])
+  home         Team         @relation(name: "home", fields: [homeId], references: [id])
+  away         Team         @relation(name: "away", fields: [awayId], references: [id])
+  Tournament   Tournament   @relation(fields: [tournamentId], references: [id])
 }
 
 model Team {
-  id           Int         @id @default(autoincrement())
-  name         String?
-  created      DateTime?   @default(now())
-  updated      DateTime?   @updatedAt
-  tournamentId Int?
+  id           Int        @id @default(autoincrement())
+  name         String
+  tournamentId Int
+  created      DateTime   @default(now())
+  updated      DateTime   @updatedAt
   players      Player[]
-  home         Match[]     @relation("home")
-  away         Match[]     @relation("away")
-  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  home         Match[]    @relation("home")
+  away         Match[]    @relation("away")
+  Tournament   Tournament @relation(fields: [tournamentId], references: [id])
 }
 
 model Player {
   id       Int          @id @default(autoincrement())
-  name     String?
-  created  DateTime?    @default(now())
-  updated  DateTime?    @updatedAt
+  name     String
+  created  DateTime     @default(now())
+  updated  DateTime     @updatedAt
   Team     Team[]
   scorer   MatchScore[] @relation("scorer")
   assistor MatchScore[] @relation("assistor")
 }
 
 model MatchScore {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   scorerId   Int
   assistorId Int
-  matchId    Int?
-  created    DateTime? @default(now())
-  updated    DateTime? @updatedAt
-  Match      Match?    @relation(fields: [matchId], references: [id])
-  scorer     Player    @relation(name: "scorer", fields: [scorerId], references: [id])
-  assistor   Player    @relation(name: "assistor", fields: [assistorId], references: [id])
+  matchId    Int
+  created    DateTime @default(now())
+  updated    DateTime @updatedAt
+  Match      Match    @relation(fields: [matchId], references: [id])
+  scorer     Player   @relation(name: "scorer", fields: [scorerId], references: [id])
+  assistor   Player   @relation(name: "assistor", fields: [assistorId], references: [id])
 }
