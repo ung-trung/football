@@ -11,7 +11,7 @@ const run = async () => {
   const tournament: Prisma.TournamentCreateInput = {
     name: 'tour 1',
   };
-  const teams: Prisma.TeamCreateInput[] = [
+  const teams = [
     {
       name: 'tour 1 team 1',
       players: { create: [{ name: 'trung dep 1' }, { name: 'trung dep 2' }] },
@@ -34,11 +34,15 @@ const run = async () => {
     // generate tournament
     const { id: tournamentId } = await prisma.tournament.create({ data: tournament });
     // generate team and player
-    const teamCreatePromises = teams.map((team) =>
+    const teamCreatePromises = teams.map((team) => {
+      const data: Prisma.TeamCreateInput = {
+        ...team,
+        Tournament: { connect: { id: tournamentId } },
+      };
       prisma.team.create({
-        data: { ...team, Tournament: { connect: { id: tournamentId } } },
-      })
-    );
+        data: data,
+      });
+    });
     const teamsResult: any = await Promise.all(teamCreatePromises);
 
     // // generate matches
@@ -74,8 +78,8 @@ const run = async () => {
       const payload = prisma.matchScore.create({
         data: {
           scorer: { connect: { id: players[0]?.id } },
-          assistor: {connect: {id:players[1]?.id }},
-          Match: { connect: { id: match.id } }
+          assistor: { connect: { id: players[1]?.id } },
+          Match: { connect: { id: match.id } },
         },
       });
       matchScoreCreatePromises.push(payload);
