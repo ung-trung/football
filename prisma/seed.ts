@@ -74,8 +74,8 @@ const run = async () => {
       const payload = prisma.matchScore.create({
         data: {
           scorer: { connect: { id: players[0]?.id } },
-          assistor: { connect: { id: players[1]?.id } },
-          Match: { connect: { id: match.id } },
+          assistor: {connect: {id:players[1]?.id }},
+          Match: { connect: { id: match.id } }
         },
       });
       matchScoreCreatePromises.push(payload);
