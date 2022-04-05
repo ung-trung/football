@@ -1,0 +1,59 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tournament {
+  id      Int       @id @default(autoincrement())
+  name    String?
+  created DateTime? @default(now())
+  updated DateTime? @updatedAt
+  matches Match[]
+  teams   Team[]
+}
+
+model Match {
+  id           Int          @id @default(autoincrement())
+  tournamentId Int?
+  homeId       Int?
+  awayId       Int?
+  order        Int?
+  created      DateTime?    @default(now())
+  updated      DateTime?    @updatedAt
+  MatchEvent   MatchEvent[]
+  home         Team?        @relation(name: "home", fields: [homeId], references: [id])
+  away         Team?        @relation(name: "away", fields: [awayId], references: [id])
+  Tournament   Tournament?  @relation(fields: [tournamentId], references: [id])
+}
+
+model Team {
+  id           Int         @id @default(autoincrement())
+  name         String?
+  created      DateTime?   @default(now())
+  updated      DateTime?   @updatedAt
+  tournamentId Int?
+  players      Player[]
+  home         Match[]     @relation("home")
+  away         Match[]     @relation("away")
+  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+}
+
+model Player {
+  id      Int       @id @default(autoincrement())
+  name    String?
+  created DateTime? @default(now())
+  updated DateTime? @updatedAt
+  Team    Team[]
+}
+
+model MatchEvent {
+  id      Int       @id @default(autoincrement())
+  matchId Int?
+  created DateTime? @default(now())
+  updated DateTime? @updatedAt
+  Match   Match?    @relation(fields: [matchId], references: [id])
+}
