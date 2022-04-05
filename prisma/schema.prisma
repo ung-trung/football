@@ -24,7 +24,7 @@ model Match {
   order        Int?
   created      DateTime?    @default(now())
   updated      DateTime?    @updatedAt
-  MatchEvent   MatchEvent[]
+  MatchScore   MatchScore[]
   home         Team?        @relation(name: "home", fields: [homeId], references: [id])
   away         Team?        @relation(name: "away", fields: [awayId], references: [id])
   Tournament   Tournament?  @relation(fields: [tournamentId], references: [id])
@@ -43,17 +43,23 @@ model Team {
 }
 
 model Player {
-  id      Int       @id @default(autoincrement())
-  name    String?
-  created DateTime? @default(now())
-  updated DateTime? @updatedAt
-  Team    Team[]
+  id       Int          @id @default(autoincrement())
+  name     String?
+  created  DateTime?    @default(now())
+  updated  DateTime?    @updatedAt
+  Team     Team[]
+  scorer   MatchScore[] @relation("scorer")
+  assistor MatchScore[] @relation("assistor")
 }
 
-model MatchEvent {
-  id      Int       @id @default(autoincrement())
-  matchId Int?
-  created DateTime? @default(now())
-  updated DateTime? @updatedAt
-  Match   Match?    @relation(fields: [matchId], references: [id])
+model MatchScore {
+  id         Int       @id @default(autoincrement())
+  scorerId   Int
+  assistorId Int
+  matchId    Int?
+  created    DateTime? @default(now())
+  updated    DateTime? @updatedAt
+  Match      Match?    @relation(fields: [matchId], references: [id])
+  scorer     Player    @relation(name: "scorer", fields: [scorerId], references: [id])
+  assistor   Player    @relation(name: "assistor", fields: [assistorId], references: [id])
 }
